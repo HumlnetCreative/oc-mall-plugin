@@ -290,8 +290,14 @@ class MySQL implements Index
             if ($filter instanceof RangeFilter) {
                 $db->where(function ($q) use ($filter) {
                     $id = $filter->property->id;
-                    $q->whereRaw('JSON_EXTRACT(property_values, ?) >= ?', ['$."' . $id . '"[0]', $filter->minValue]);
-                    $q->whereRaw('JSON_EXTRACT(property_values, ?) <= ?', ['$."' . $id . '"[0]', $filter->maxValue]);
+                    
+                    if ($filter->property->type === "integer") {
+                        $q->whereRaw('CAST(JSON_EXTRACT(property_values, ?) AS UNSIGNED) >= ?', ['$."' . $id . '"[0]', $filter->minValue]);
+                        $q->whereRaw('CAST(JSON_EXTRACT(property_values, ?) AS UNSIGNED) <= ?', ['$."' . $id . '"[0]', $filter->maxValue]);
+                    } else {
+                        $q->whereRaw('JSON_EXTRACT(property_values, ?) >= ?', ['$."' . $id . '"[0]', $filter->minValue]);
+                        $q->whereRaw('JSON_EXTRACT(property_values, ?) <= ?', ['$."' . $id . '"[0]', $filter->maxValue]);
+                    }
                 });
             }
         });
