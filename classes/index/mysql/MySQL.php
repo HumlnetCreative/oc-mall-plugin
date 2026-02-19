@@ -292,8 +292,8 @@ class MySQL implements Index
                     $id = $filter->property->id;
                     
                     if ($filter->property->type === "integer") {
-                        $q->whereRaw('CAST(JSON_EXTRACT(property_values, ?) AS UNSIGNED) >= ?', ['$."' . $id . '"[0]', $filter->minValue]);
-                        $q->whereRaw('CAST(JSON_EXTRACT(property_values, ?) AS UNSIGNED) <= ?', ['$."' . $id . '"[0]', $filter->maxValue]);
+                        $q->whereRaw('CAST(JSON_UNQUOTE(JSON_EXTRACT(property_values, ?)) AS UNSIGNED) >= ?', ['$."' . $id . '"[0]', $filter->minValue]);
+                        $q->whereRaw('CAST(JSON_UNQUOTE(JSON_EXTRACT(property_values, ?)) AS UNSIGNED) <= ?', ['$."' . $id . '"[0]', $filter->maxValue]);
                     } else {
                         $q->whereRaw('JSON_EXTRACT(property_values, ?) >= ?', ['$."' . $id . '"[0]', $filter->minValue]);
                         $q->whereRaw('JSON_EXTRACT(property_values, ?) <= ?', ['$."' . $id . '"[0]', $filter->maxValue]);
